@@ -1,99 +1,99 @@
 "use strict";
 
-class UserBudget {
-  constructor(money, time) {
-    if (typeof money !== "number" || typeof time !== "string") {
-      // TYPEOF
-      throw new TypeError("Both arguments must be of type number and string");
-    }
-    this.money = money;
-    this.time = time;
-  }
-}
-
+// Объявление глобального объекта с данными
 let appData = {
-  budget: null,
-  timeData: null,
-  expenses: {},
-  optionalExpenses: {},
-  income: [],
-  savings: false,
+  budget: null, // денег
+  timeData: null, // время
+  expenses: {}, // расходы
+  optionalExpenses: {}, // дополнительные расходы
+  income: [], // доходы
+  savings: false, // сохраненные
 };
 
+// Когда документ готов к запуску
 $(document).ready(function () {
+  // Форма ввода бюджета
   $("#budget").on("submit", function (e) {
-    e.preventDefault();
-    const money = parseFloat($("#money").val()); // PARSEFLOAT
+    // обработчик события отправки формы
+    e.preventDefault(); // предотвращаем стандартное поведение формы
+
+    const money = parseFloat($("#money").val()); // преобразование значения в число
     const time = $("#time").val();
 
     if (isNaN(money)) {
-      throw new Error("Money must be a number");
+      // проверка на корректность введенных данных
+      throw new Error("Деньги должны быть числом"); // выбрасываем исключение, если введен не числовой тип
     }
 
-    const userBudget = new UserBudget(money, time);
-    console.log(userBudget);
-    appData.budget = userBudget.money;
-    appData.timeData = userBudget.time;
-    console.log(appData);
-    $("#money").val("");
-    $("#time").val("");
-    appData.perDay = parseFloat((money / 30).toFixed(2)); // tofixed - returns STRING, parse Float for float type
-    $("#oneday").val(`Ваш бюджет на 1 день: ${appData.perDay}`);
-    if (perDay < 100) {
-      $("#moneystatus").val(`Ваш достаток беден.`);
-    } else if (perDay > 100 && perDay < 2000) {
-      $("#moneystatus").val(`Ваш достаток средний.`);
-    } else if (perDay > 2000) {
-      $("#moneystatus").val(`Ваш достаток богат.`);
+    appData.budget = money; // сохранение денег в глобальном объекте
+    appData.timeData = time; // сохранение времени в глобальном объекте
+    console.log(appData); // выводим содержимое глобального объекта в консоль
+    $("#money").val(""); // очищаем поле ввода с денежными суммами
+    $("#time").val(""); // очищаем поле ввода с временем
+    appData.perDay = parseFloat((money / 30).toFixed(2)); // расчет дневного бюджета
+    $("#oneday").val(`Ваш бюджет на 1 день: ${appData.perDay}`); // выводим результат на страницу
+
+    // Вывод сообщения о достатке
+    if (appData.perDay < 100) {
+      $("#moneystatus").val(`Ваш достаток беден.`); // выводим сообщение о бедности
+    } else if (appData.perDay > 100 && appData.perDay < 2000) {
+      $("#moneystatus").val(`Ваш достаток средний.`); // выводим сообщение о среднем достатке
+    } else if (appData.perDay > 2000) {
+      $("#moneystatus").val(`Ваш достаток богат.`); // выводим сообщение о богатстве
     } else {
-      alert("Произошла непредвиденная ошибка.");
+      alert("Произошла непредвиденная ошибка."); // выводим сообщение об ошибке
     }
   });
 
+  // Форма ввода расходов
   $("#months").on("submit", "form", function (e) {
-    e.preventDefault();
-    const month = $(this).find("input[name=month]").val();
-    const money = parseFloat($(this).find("input[name=money]").val());
+    // обработчик события отправки формы
+    e.preventDefault(); // предотвращаем стандартное поведение формы
+
+    const month = $(this).find("input[name=month]").val(); // выбор месяца
+    const money = parseFloat($(this).find("input[name=money]").val()); // выбор расходов
+
     if (!isNaN(money)) {
-      appData.expenses[month] = money; // ADD TO OBJECT
-      console.log(appData.expenses);
+      // проверка на корректность введенных данных
+      appData.expenses[month] = money; // сохранение расходов в глобальном объекте
+      console.log(appData.expenses); // выводим содержимое объекта в консоль
     } else {
-      $(this).find("input[name=month]").val("");
-      $(this).find("input[name=money]").val("");
-      alert("Введены некорректные данные или они отсутствуют");
+      $(this).find("input[name=month]").val(""); // очищаем поле ввода с месяцем
+      $(this).find("input[name=money]").val(""); // очищаем поле ввода с расходами
+      alert("Введены некорректные данные или они отсутствуют"); // выводим сообщение об ошибке
     }
   });
 
+  // Предложение добавить сохраненные
   if (appData.savings == 0) {
-    // ЕСЛИ СОХРАНЕНИЙ НЕТ ТО ПРЕДЛОЖИТЬ ДОБАВИТЬ ИХ
     console.log(appData.savings);
     $("#savings").css({
-      display: "flex", // ОТКРЫТЬ ЗАПРОС НА ДОБАВЛЕНИЕ
+      display: "flex", // отображение предложения добавить сохраненные
     });
   }
+
+  // Выбор действий с сохраненными
   $(".choose").click(function () {
     if ($(this).val() == 0) {
-      // ПРОВЕРКА ЗНАЧЕНИЯ НАЖАТОЙ КНОПКИ
-      $("#savings").css("display", "none");
+      // если выбран вариант "нет"
+      $("#savings").css("display", "none"); // скрываем предложение добавить сохраненные
     } else {
-      appData.savings = true;
+      appData.savings = true; // сохраняем в глобальном объекте
       console.log(appData.savings);
       $("#openSavings").css({
-        display: "flex", // ОТКРЫТЬ ДОБАВЛЕНИЕ СОХРАНЕНИЙ
+        display: "flex", // отображение формы добавления сохраненных
       });
-      $("#buttons").css("display", "none"); // УБРАТЬ КНОПКИ ЧТОБ НЕ МЕШАЛИСЬ
+      $("#buttons").css("display", "none"); // скрываем кнопки
     }
   });
 
-  $("#addSaving").submit(function (e) {
-    e.preventDefault();
-    const savingData = $(this).serializeArray(); // ПОЛУЧЕНИЕ ДАННЫХ В ВИДЕ МАССИВА ARRAY[INDEX].VALUE/NAME
-    console.log(savingData);
-    $.each(savingData, function (index, value) {
-      console.log(value.name + ": " + value.value);
-    });
-    const sum = parseFloat(savingData[0].value);
-    const percent = parseFloat(savingData[1].value);
+  // Добавление сохраненных
+  $("#addSaving").submit(function (event) {
+    event.preventDefault(); // предотвращаем стандартное поведение формы
+
+    const sum = parseFloat($("#sum").val()); // сумма
+    const percent = parseFloat($("#percent").val()); // процент
+
     if (
       sum === null ||
       percent === null ||
@@ -104,10 +104,11 @@ $(document).ready(function () {
       isNaN(percent)
     ) {
       $("#addSaving").get(0).reset("input");
-      console.log("ERROR in #" + $("#addSaving").attr("id"));
+      console.log("ОШИБКА в #" + $("#addSaving").attr("id"));
       alert("Неправильно введены данные. Перепроверьте для заполнения.");
     } else {
-      appData.monthInCome = ((sum / 100 / 12) * percent).toFixed(2);
+      $("#addSaving").get(0).reset("input");
+      appData.monthInCome = ((sum / 100 / 12) * percent).toFixed(2); // расчет ежемесячного дохода
       console.log(appData.monthInCome);
       $("#openedSaving").css({
         display: "flex",
