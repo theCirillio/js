@@ -47,6 +47,13 @@
                 <input type="text" readonly id="openedSaving" style="display: none;">
             </div>
         </div>
+        <div id="optionalExpenses" style="width: 300px; display: flex; flex-direction:column; gap: 10px;">
+            <form action="" id="optExpenses">
+                <input type="text" name="optionalExpenses" placeholder="Добавить необязательные расходы?" value="">
+                <input type="submit" value="Добавить">
+            </form>
+            <input type="text" readonly id="addedOptExpenses" style="display: none;">
+        </div>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
