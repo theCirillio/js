@@ -1,16 +1,5 @@
 "use strict";
 
-class UserBudget {
-  constructor(money, time) {
-    if (typeof money !== "number" || typeof time !== "string") {
-      // TYPEOF
-      throw new TypeError("Both arguments must be of type number and string");
-    }
-    this.money = money;
-    this.time = time;
-  }
-}
-
 let appData = {
   budget: null,
   timeData: null,
@@ -18,6 +7,38 @@ let appData = {
   optionalExpenses: {},
   income: [],
   savings: false,
+  addSavings: function (savingData) {
+    $.each(savingData, function (index, value) {
+      console.log(value.name + ": " + value.value);
+    });
+    const sum = parseFloat(savingData[0].value);
+    const percent = parseFloat(savingData[1].value);
+    if (
+      sum === null ||
+      percent === null ||
+      sum <= 0 ||
+      percent <= 0 ||
+      percent >= 100 ||
+      isNaN(sum) ||
+      isNaN(percent)
+    ) {
+      $("#addSaving").get(0).reset("input");
+      console.log("ERROR in #" + $("#addSaving").attr("id"));
+      alert("Неправильно введены данные. Перепроверьте для заполнения.");
+    } else {
+      $("#addSaving").get(0).reset("input");
+      appData.monthInCome = ((sum / 100 / 12) * percent).toFixed(2);
+      console.log(appData.monthInCome);
+
+      $("#openedSaving").val("Доход в месяц: " + appData.monthInCome);
+      showEl("#openedSaving", 1);
+    }
+  },
+};
+
+let showEl = function (elem, show) {
+  const displayValue = show === 0 ? "none" : show === 1 ? "flex" : "block";
+  $(elem).css("display", displayValue);
 };
 
 $(document).ready(function () {
@@ -30,14 +51,13 @@ $(document).ready(function () {
       throw new Error("Money must be a number");
     }
 
-    const userBudget = new UserBudget(money, time);
-    console.log(userBudget);
-    appData.budget = userBudget.money;
-    appData.timeData = userBudget.time;
+    appData.budget = money;
+    appData.timeData = time;
     console.log(appData);
     $("#money").val("");
     $("#time").val("");
-    appData.perDay = parseFloat((money / 30).toFixed(2)); // tofixed - returns STRING, parse Float for float type
+    let perDay = parseFloat((money / 30).toFixed(2));
+    appData.perDay = perDay; // tofixed - returns STRING, parse Float for float type
     $("#oneday").val(`Ваш бюджет на 1 день: ${appData.perDay}`);
     if (perDay < 100) {
       $("#moneystatus").val(`Ваш достаток беден.`);
@@ -64,24 +84,28 @@ $(document).ready(function () {
     }
   });
 
-  if (appData.savings == 0) {
-    // ЕСЛИ СОХРАНЕНИЙ НЕТ ТО ПРЕДЛОЖИТЬ ДОБАВИТЬ ИХ
-    console.log(appData.savings);
-    $("#savings").css({
-      display: "flex", // ОТКРЫТЬ ЗАПРОС НА ДОБАВЛЕНИЕ
-    });
-  }
+  let checkSavings = function () {
+    if (appData.savings === false) {
+      console.log(0);
+      showEl("#notif", 1);
+    } else {
+      console.log(1);
+      showEl("#notif", 0);
+    }
+  };
+
+  checkSavings();
+
   $(".choose").click(function () {
     if ($(this).val() == 0) {
+      checkSavings();
+      showEl("#savings", 0);
       // ПРОВЕРКА ЗНАЧЕНИЯ НАЖАТОЙ КНОПКИ
-      $("#savings").css("display", "none");
     } else {
       appData.savings = true;
-      console.log(appData.savings);
-      $("#openSavings").css({
-        display: "flex", // ОТКРЫТЬ ДОБАВЛЕНИЕ СОХРАНЕНИЙ
-      });
-      $("#buttons").css("display", "none"); // УБРАТЬ КНОПКИ ЧТОБ НЕ МЕШАЛИСЬ
+      checkSavings();
+      showEl("#openSavings", 1);
+      showEl("#buttons", 0);
     }
   });
 
@@ -89,32 +113,7 @@ $(document).ready(function () {
     e.preventDefault();
     const savingData = $(this).serializeArray(); // ПОЛУЧЕНИЕ ДАННЫХ В ВИДЕ МАССИВА ARRAY[INDEX].VALUE/NAME
     console.log(savingData);
-    $.each(savingData, function (index, value) {
-      console.log(value.name + ": " + value.value);
-    });
-    const sum = parseFloat(savingData[0].value);
-    const percent = parseFloat(savingData[1].value);
-    if (
-      sum === null ||
-      percent === null ||
-      sum <= 0 ||
-      percent <= 0 ||
-      percent >= 100 ||
-      isNaN(sum) ||
-      isNaN(percent)
-    ) {
-      $("#addSaving").get(0).reset("input");
-      console.log("ERROR in #" + $("#addSaving").attr("id"));
-      alert("Неправильно введены данные. Перепроверьте для заполнения.");
-    } else {
-      $("#addSaving").get(0).reset("input");
-      appData.monthInCome = ((sum / 100 / 12) * percent).toFixed(2);
-      console.log(appData.monthInCome);
-      $("#openedSaving").css({
-        display: "flex",
-      });
-      $("#openedSaving").val("Доход в месяц: " + appData.monthInCome);
-    }
+    appData.addSavings(savingData);
   });
 
   let numExpenses = 0;
@@ -134,5 +133,59 @@ $(document).ready(function () {
       $("#addedOptExpenses").css("display", "flex");
       $("#addedOptExpenses").val("Добавлены " + exps + " в доп. расходы.");
     }
+  });
+
+  $(".add_income").click(function () {
+    showEl("#add_income", 0);
+    if ($(this).val() == 0) {
+      console.log("Не добавлены новые расходы");
+    } else {
+      console.log("Добавлены новые расходы");
+      showEl("#income", 1);
+    }
+  });
+
+  $("#chooseIncome").submit(function (e) {
+    e.preventDefault();
+    const incomes = $(this).serializeArray();
+    const answer = incomes[0].value;
+    let tmp = parseFloat(answer);
+    if (Number(tmp) || answer.length == 0) {
+      console.log("неверный ввод");
+    } else {
+      appData.income.push(answer);
+      console.log(appData.income);
+      $("#chooseIncome").get(0).reset("input");
+      let incomes = "";
+      $.each(appData.income, function (index, income) {
+        incomes = incomes + "[" + (index + 1) + "] " + income;
+        if (index != appData.income.length - 1) {
+          incomes = incomes + "<br/>";
+        }
+      });
+      $("#income_added").html(incomes);
+    }
+  });
+
+  $("#getAppData").click(function () {
+    let appdata = "";
+    for (let [key, value] of Object.entries(appData)) {
+      if (typeof value === "object" && value !== null) {
+        appdata += `${key}: `;
+        for (let [key1, value1] of Object.entries(value)) {
+          appdata += `${key1}: ${value1}; `;
+        }
+        appdata += "<br/>";
+      } else if (typeof value === "array") {
+        appdata += `${key}: `;
+        for (let i = 0; i < value.length; i++) {
+          appdata += `${value[i]} `;
+        }
+        appdata += "<br/>";
+      } else if (typeof value !== "function") {
+        appdata += `${key}: ${value}<br/>`;
+      }
+    }
+    $("#appdata").html(appdata);
   });
 });

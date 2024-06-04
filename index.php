@@ -31,9 +31,11 @@
                 <input type="submit" value="Добавить">
             </form>
         </div>
-        <div id="savings" style="display: none; flex-direction:column; gap:20px; align-items:center;">
-            <p>У вас не найдено накоплений!</p>
-            <p>Хотите открыть?</p>
+        <div id="savings" style="display: flex; flex-direction:column; gap:20px; align-items:center;">
+            <div id="notif" style="display: none; flex-direction:column; gap:20px; align-items:center;">
+                <p>У вас не найдено накоплений!</p>
+                <p>Хотите открыть?</p>
+            </div>
             <div id="buttons" style="display: flex; flex-direction:column; width:100px; gap: 10px;">
                 <button class="choose" value="1">Да</button>
                 <button class="choose" value="0">Нет</button>
@@ -53,6 +55,22 @@
                 <input type="submit" value="Добавить">
             </form>
             <input type="text" readonly id="addedOptExpenses" style="display: none;">
+        </div>
+        <div id="add_income" style="display: flex; flex-direction:column; width:200px; gap: 10px; margin: 0 auto;">
+            <p>Добавить дополнительные доходы?</p>
+            <button class="add_income" value=1>Да</button>
+            <button class="add_income" value=0>Нет</button>
+        </div>
+        <div id="income" style="display: none;flex-direction:column; gap:20px;">
+            <form action="" id="chooseIncome">
+                <input type="text" name="chooseIncome" placeholder="Добавьте доп. заработок" id="inputIncome">
+                <input type="submit" value="Добавить">
+            </form>
+            <p id="income_added"></p>
+        </div>
+        <div class="appdata" style="display: flex; flex-direction:column; width:200px; gap: 10px; margin: 0 auto;">
+            <button id="getAppData" value=1>Получить всё содержимое appData</button>
+            <p id="appdata"></p>
         </div>
     </div>
 
