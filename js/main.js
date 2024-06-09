@@ -69,6 +69,29 @@ $(expensesBtn).click(function (e) {
   }
 });
 
+$(optionalExpensesBtn).click(function (e) {
+  e.preventDefault();
+  let opts = "";
+  appData.optionalExpenses = {};
+  for (let i = 0; i < optionalExpensesItem.length; i++) {
+    let opt = optionalExpensesItem[i].value;
+    if (opt == "") {
+      continue;
+    }
+    if (typeof opt === "string" && typeof opt != null) {
+      appData.optionalExpenses[i + 1] = opt;
+      opts += appData.optionalExpenses[i + 1];
+      if (i != optionalExpensesItem.length - 1) {
+        opts += ", ";
+      }
+      console.log(appData.optionalExpenses);
+    } else {
+      console.log("Некорректные данные");
+    }
+  }
+  optionalExpensesValue.textContent = opts;
+});
+
 let appData = {
   budget: money,
   timeData: time,
