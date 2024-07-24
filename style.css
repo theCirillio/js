@@ -82,6 +82,40 @@
   }
 }
 
+.timer-container {
+  position: fixed;
+  display: flex;
+  background-color: aliceblue;
+  outline: 1px solid black;
+  flex-direction: column;
+  width: 14dvw;
+  height: 7dvw;
+  left: 2dvw;
+  top: 2dvw;
+  align-items: center;
+  justify-content: center;
+  h2 {
+    font-weight: 400;
+    font-size: 2.7rem;
+    text-align: center;
+    height: 50%;
+  }
+}
+
+.timer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.time {
+  span {
+    font-size: 3rem;
+    font-weight: 600;
+  }
+}
 header {
   background: linear-gradient(
     180deg,

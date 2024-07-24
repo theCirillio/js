@@ -85,4 +85,55 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   });
+
+  //TIMER
+
+  function getRemainingTime(endtime) {
+    const total = Date.parse(endtime) - Date.parse(new Date());
+    const seconds = Math.floor((total / 1000) % 60);
+    const minutes = Math.floor((total / 1000 / 60) % 60);
+    const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
+    const days = Math.floor(total / (1000 * 60 * 60 * 24));
+
+    return {
+      total: total,
+      days: days,
+      hours: hours,
+      minutes: minutes,
+      seconds: seconds,
+    };
+  }
+
+  function initializeClock(id, endtime) {
+    const clock = document.querySelector(".timer");
+    const daysSpan = clock.querySelector("#days");
+    const hoursSpan = clock.querySelector("#hours");
+    const minutesSpan = clock.querySelector("#minutes");
+    const secondsSpan = clock.querySelector("#seconds");
+
+    function updateClock() {
+      const t = getRemainingTime(endtime);
+
+      daysSpan.textContent = ("0" + t.days).slice(-2);
+      hoursSpan.textContent = ("0" + t.hours).slice(-2);
+      minutesSpan.textContent = ("0" + t.minutes).slice(-2);
+      secondsSpan.textContent = ("0" + t.seconds).slice(-2);
+
+      if (t.total <= 0) {
+        clearInterval(timeinterval);
+        daysSpan.textContent = "00";
+        hoursSpan.textContent = "00";
+        minutesSpan.textContent = "00";
+        secondsSpan.textContent = "00";
+        const timer = document.querySelector("#timer");
+        timer.remove();
+        addClick.remove();
+      }
+    }
+    updateClock();
+    const timeinterval = setInterval(updateClock, 1000);
+  }
+
+  const deadline = new Date("07-25-2024 14:42:00");
+  initializeClock("timer", deadline);
 });
